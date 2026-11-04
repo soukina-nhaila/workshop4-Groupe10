@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FocusBoard | Personal workspace</title><link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"></head>
+<body>
+<aside class="sidebar"><div class="brand"><b>F</b> FocusBoard</div><p class="label">WORKSPACE</p><a class="nav active" href="/">▦ &nbsp; Overview</a><a class="nav" href="#tasks">☷ &nbsp; My tasks</a>
+<div class="profile"><span>S</span><div><strong>Student account</strong><small>DevSecOps workshop</small></div></div></aside>
+<main><header><span>Workspace&nbsp; / &nbsp;Overview</span><span class="online">● Local demo</span></header>
+<section class="welcome"><div><small>PERSONAL WORKSPACE</small><h1>Good afternoon 👋</h1><p>Organize your work, keep your focus, and make progress.</p></div><div class="chip">✦ Your productivity space</div></section>
+<section class="stats"><article><label>Total tasks</label><strong>{{ total }}</strong><small>Tasks in your workspace</small></article><article><label>Completed</label><strong>{{ completed }}</strong><small>Nice work so far</small></article><article><label>Remaining</label><strong>{{ total-completed }}</strong><small>One step at a time</small></article></section>
+<section class="layout"><article class="panel" id="tasks"><div class="heading"><div><h2>My tasks</h2><p>A simple list to keep you moving.</p></div><span>{{ total }} items</span></div>
+<form class="add" action="/tasks" method="post"><input name="title" placeholder="What needs to be done?" required maxlength="120"><select name="category"><option>General</option><option>DevSecOps</option><option>Study</option><option>Personal</option></select><button>＋ Add task</button></form>
+{% with messages=get_flashed_messages() %}{% for m in messages %}<div class="notice">{{ m }}</div>{% endfor %}{% endwith %}
+{% for task in tasks %}<div class="task"><form action="/tasks/{{task.id}}/toggle" method="post"><button class="check {% if task.done %}done{% endif %}">{% if task.done %}✓{% endif %}</button></form><div class="tasktext"><b class="{% if task.done %}strike{% endif %}">{{task.title}}</b><small>{{task.category}}</small></div><form action="/tasks/{{task.id}}/delete" method="post"><button class="delete">×</button></form></div>{% else %}<p>No tasks yet.</p>{% endfor %}</article>
+<aside class="panel focus"><h2>Today’s focus</h2><p>A little progress adds up.</p><div class="art"><i></i><b>✦</b></div><small class="purple">A LITTLE REMINDER</small><h3>Stay consistent.</h3><p>Choose one important task and give it your attention.</p><div class="meterlabel">Tasks completed <b>{{completed}} / {{total}}</b></div><div class="meter"><i style="width:{{ (completed/total*100) if total else 0 }}%"></i></div></aside></section>
+<footer>FocusBoard · Educational demo for Workshop 4 — Docker &amp; Trivy</footer></main></body></html>
