@@ -6,9 +6,14 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_DEBUG=0
 
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt \
+    && pip uninstall -y pip \
     && useradd --create-home --shell /usr/sbin/nologin appuser \
     && mkdir -p /app/instance \
     && chown -R appuser:appuser /app
