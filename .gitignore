@@ -4,3 +4,12 @@ __pycache__/
 venv/
 .env
 instance/
+
+.env.*
+!.env.example
+
+# Local editor settings
+.vscode/
+
+# Local Trivy reports
+trivy-*.txt

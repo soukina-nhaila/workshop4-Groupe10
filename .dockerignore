@@ -1,6 +1,30 @@
+# Python cache
 __pycache__/
-*.pyc
-.git/
+*.py[cod]
+
+# Virtual environments
 .venv/
 venv/
-# Intentionally missing .env and config.py for initial scan.
+
+# Git
+.git/
+.gitignore
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local configuration and credentials
+config.py
+
+# Local database and instance data
+instance/
+
+# Trivy reports
+trivy-*.txt
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/

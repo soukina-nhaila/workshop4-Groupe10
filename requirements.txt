@@ -1,5 +1,1 @@
-# Intentionally old versions for initial CVE discovery (training only)
-Flask==2.0.1
-Werkzeug==2.0.1
-requests==2.25.1
-urllib3==1.26.5
+Flask==3.1.3

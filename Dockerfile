@@ -1,11 +1,25 @@
-# INTENTIONALLY INSECURE: local educational exercise only.
-FROM python:3.9
+FROM python:3.13-slim
+
 WORKDIR /app
-COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
-# Fake value only; deliberately exposed for secret/misconfiguration practice.
-ENV DEMO_API_KEY="FAKE_DEMO_KEY_DO_NOT_USE_123456789"
-ENV FLASK_DEBUG=1
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_DEBUG=0
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt \
+    && useradd --create-home --shell /usr/sbin/nologin appuser \
+    && mkdir -p /app/instance \
+    && chown -R appuser:appuser /app
+
+COPY --chown=appuser:appuser . .
+
+USER appuser
+
 EXPOSE 5000
-# Intentionally runs as root with debug enabled.
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/health', timeout=3)" || exit 1
+
 CMD ["python", "app.py"]

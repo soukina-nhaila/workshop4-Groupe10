@@ -1,0 +1,57 @@
+
+name: Docker Security Scan with Trivy
+
+on:
+  push:
+    branches:
+      - workshop4-Groupe10
+  pull_request:
+    branches:
+      - workshop4-Groupe10
+
+permissions:
+  contents: read
+
+jobs:
+  security-scan:
+    name: Build and Security Scan
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t focusboard:${{ github.sha }} .
+
+      - name: Scan Docker image for HIGH and CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: focusboard:${{ github.sha }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table
+
+      - name: Scan Dockerfile configuration
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: table
+
+      - name: Scan repository for exposed secrets
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: secret
+          exit-code: '1'
+          format: table

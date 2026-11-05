@@ -2,10 +2,11 @@ import os, sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 app = Flask(__name__)
-# FAKE training secret only; intentionally exposed for Trivy practice.
-app.secret_key = "FAKE_FLASK_SECRET_FOR_WORKSHOP_ONLY_123456"
-DEMO_ADMIN_PASSWORD = "admin123-demo-only"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+DEMO_ADMIN_PASSWORD = os.environ.get("DEMO_ADMIN_PASSWORD")
 DB = "instance/tasks.db"
+if not app.secret_key:
+    raise RuntimeError("FLASK_SECRET_KEY environment variable is required")
 
 def connect():
     os.makedirs("instance", exist_ok=True)
@@ -60,11 +61,10 @@ def health():
 
 @app.get("/admin-demo")
 def admin_demo():
-    if request.args.get("password") == DEMO_ADMIN_PASSWORD:
+    if DEMO_ADMIN_PASSWORD and request.args.get("password") == DEMO_ADMIN_PASSWORD:
         return jsonify(message="Demo admin endpoint reached")
     return jsonify(error="unauthorized"), 401
 
 if __name__ == "__main__":
     init_db()
-    # Intentionally insecure for the initial scan: debug mode + all interfaces.
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
